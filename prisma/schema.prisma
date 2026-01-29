@@ -1,0 +1,154 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL") // Used for migrations in Supabase
+}
+
+// ==============================
+// 1. AUTHENTICATION (NextAuth)
+// ==============================
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?   // Hashed password for Credentials Auth
+  currency      String    @default("USD") // User preference
+
+  accounts      Account[] // NextAuth Accounts (OAuth)
+  sessions      Session[] // NextAuth Sessions
+  
+  // App Domain Relations
+  userAccounts  UserAccount[] // The actual financial accounts (Bank, Cash)
+  categories    Category[]
+  transactions  Transaction[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String? @db.Text
+  access_token       String? @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String? @db.Text
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ==============================
+// 2. DOMAIN MODELS (FinTrack)
+// ==============================
+
+// Enums for strict typing
+enum AccountType {
+  CASH
+  BANK
+  WALLET
+  INVESTMENT
+  OTHER
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+// Accounts (e.g., "Chase Checking", "My Wallet")
+model UserAccount {
+  id        String      @id @default(cuid())
+  name      String
+  type      AccountType @default(CASH)
+  balance   Decimal     @default(0) // Initial balance or cached current balance
+  userId    String
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  transactions Transaction[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// Categories (e.g., "Groceries", "Salary")
+model Category {
+  id        String          @id @default(cuid())
+  name      String
+  type      TransactionType @default(EXPENSE)
+  icon      String?         // Stores emoji or icon slug (e.g., "shopping-cart")
+  color     String?         // Hex code (e.g., "#FF0000")
+  userId    String
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  transactions Transaction[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([name, userId, type]) // Prevent duplicate category names for same type/user
+  @@index([userId])
+}
+
+// Transactions (The Core Data)
+model Transaction {
+  id          String          @id @default(cuid())
+  description String?
+  amount      Decimal         @db.Decimal(10, 2) // Precision is key for finance
+  date        DateTime        // User-selected date for the transaction
+  type        TransactionType @default(EXPENSE)
+  
+  // Relations
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  accountId   String
+  account     UserAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  
+  categoryId  String
+  category    Category    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now()) // System timestamp
+  updatedAt   DateTime @updatedAt
+
+  // Indexes for Analytics Performance
+  @@index([userId])
+  @@index([userId, date]) // Critical for "Get my transactions between X and Y"
+  @@index([userId, categoryId]) // Good for "Spending by Category"
+  @@index([userId, accountId])  // Good for "Account History"
+}
