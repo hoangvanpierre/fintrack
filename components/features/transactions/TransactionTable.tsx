@@ -32,10 +32,11 @@ interface Props {
 
 export function TransactionTable({ data }: Props) {
   return (
-    <div className="rounded-md border bg-white">
-      <Table>
-        <TableHeader>
-          <TableRow>
+    <div className="rounded-md border bg-white overflow-hidden">
+      <div className="overflow-x-auto">
+        <Table className="min-w-[600px]">
+          <TableHeader>
+            <TableRow>
             <TableHead>Date</TableHead>
             <TableHead>Description</TableHead>
             <TableHead>Category</TableHead>
@@ -77,6 +78,7 @@ export function TransactionTable({ data }: Props) {
           )}
         </TableBody>
       </Table>
+      </div>
     </div>
   )
 }

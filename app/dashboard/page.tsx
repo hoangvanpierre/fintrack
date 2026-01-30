@@ -100,7 +100,7 @@ export default async function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         
         {/* Chart Section (Client Component) */}
-        <Card className="col-span-4">
+        <Card className="col-span-1 md:col-span-2 lg:col-span-4">
           <CardHeader>
             <CardTitle>Cash Flow History</CardTitle>
           </CardHeader>
@@ -110,7 +110,7 @@ export default async function DashboardPage() {
         </Card>
 
         {/* Recent Transactions */}
-        <Card className="col-span-3">
+        <Card className="col-span-1 md:col-span-2 lg:col-span-3">
           <CardHeader>
             <CardTitle>Recent Transactions</CardTitle>
           </CardHeader>

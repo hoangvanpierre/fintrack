@@ -14,6 +14,7 @@ import { getUserAccounts } from "@/services/account.service"
 import { getUserCategories } from "@/services/transaction.service"
 import { TransactionDialog } from "@/components/features/transactions/TransactionDialog"
 import { UserNav } from "@/components/features/layout/UserNav"
+import { MobileNav } from "@/components/features/layout/MobileNav"
 
 export default async function DashboardLayout({
   children,
@@ -34,8 +35,8 @@ export default async function DashboardLayout({
       {/* Sidebar - Desktop */}
       <aside className="w-64 bg-white border-r hidden md:flex flex-col">
         <div className="p-6 border-b">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-            FinTrack
+          <h1 className="text-2xl font-bold tracking-[-0.085em] text-gray-900">
+            fintrack
           </h1>
         </div>
         
@@ -95,10 +96,8 @@ export default async function DashboardLayout({
       <div className="flex-1 flex flex-col">
         {/* Mobile Header */}
         <header className="h-16 border-b bg-white flex items-center justify-between px-4 md:hidden">
-          <span className="font-bold">FinTrack</span>
-          <Button variant="ghost" size="icon">
-            <Menu className="h-5 w-5" />
-          </Button>
+          <span className="text-xl font-bold tracking-[-0.085em] text-gray-900">fintrack</span>
+          <MobileNav user={user || {}} />
         </header>
 
         {/* Header - Desktop (User Menu) */}

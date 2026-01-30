@@ -4,8 +4,12 @@ import * as z from "zod";
 import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
 import { RegisterSchema } from "@/schemas/auth.schema";
-import { signIn } from "@/lib/auth";
+import { signIn, signOut } from "@/lib/auth";
 import { AuthError } from "next-auth";
+
+export const logout = async () => {
+  await signOut({ redirectTo: "/login" });
+};
 
 export const register = async (values: z.infer<typeof RegisterSchema>) => {
   const validatedFields = RegisterSchema.safeParse(values);
