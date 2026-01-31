@@ -32,9 +32,9 @@ export default async function AccountsPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {new Intl.NumberFormat('en-US', {
+                {new Intl.NumberFormat('vi-VN', {
                     style: 'currency',
-                    currency: 'USD',
+                    currency: 'VND',
                 }).format(account.balance)}
               </div>
               <p className="text-xs text-muted-foreground capitalize">

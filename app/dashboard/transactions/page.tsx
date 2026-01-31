@@ -9,7 +9,15 @@ export default async function TransactionsPage() {
 
   if (!user?.id) return null
 
-  const transactions = await getTransactionsByUserId(user.id)
+  const rawTransactions = await getTransactionsByUserId(user.id)
+  const transactions = rawTransactions.map((t) => ({
+    ...t,
+    amount: t.amount.toNumber(),
+    account: {
+      ...t.account,
+      balance: t.account.balance.toNumber(),
+    },
+  }))
 
   return (
     <div className="space-y-6">

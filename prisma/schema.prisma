@@ -22,7 +22,7 @@ model User {
   emailVerified DateTime?
   image         String?
   password      String?   // Hashed password for Credentials Auth
-  currency      String    @default("USD") // User preference
+  currency      String    @default("VND") // User preference
 
   accounts      Account[] // NextAuth Accounts (OAuth)
   sessions      Session[] // NextAuth Sessions
@@ -129,7 +129,7 @@ model Category {
 model Transaction {
   id          String          @id @default(cuid())
   description String?
-  amount      Decimal         @db.Decimal(10, 2) // Precision is key for finance
+  amount      Decimal         @db.Decimal(20, 2) // Precision is key for finance
   date        DateTime        // User-selected date for the transaction
   type        TransactionType @default(EXPENSE)
   

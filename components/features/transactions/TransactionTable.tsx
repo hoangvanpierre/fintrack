@@ -68,9 +68,9 @@ export function TransactionTable({ data }: Props) {
                 <TableCell>{t.account.name}</TableCell>
                 <TableCell className={`text-right font-bold ${t.type === 'INCOME' ? 'text-green-600' : 'text-red-600'}`}>
                   {t.type === 'INCOME' ? '+' : '-'}
-                  {new Intl.NumberFormat('en-US', {
+                  {new Intl.NumberFormat('vi-VN', {
                     style: 'currency',
-                    currency: 'USD',
+                    currency: 'VND',
                   }).format(Number(t.amount))}
                 </TableCell>
               </TableRow>
