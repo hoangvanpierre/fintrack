@@ -93,19 +93,22 @@ export default function Home() {
           animate="visible"
           className="max-w-6xl flex flex-col items-center relative z-10"
         >
+          {/* Main Title Glow - Pink/Violet/Peach */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gradient-to-r from-pink-500/20 via-violet-500/20 to-orange-400/20 blur-[100px] -z-10 rounded-full mix-blend-multiply pointer-events-none" />
+
           {/* Headline */}
           <motion.h1 
             variants={itemVariants} 
-            className="text-5xl md:text-7xl font-serif tracking-tight text-slate-900 mb-6 leading-[1.1]"
+            className="text-5xl md:text-7xl font-serif tracking-tight text-black mb-6 leading-[1.1] relative"
           >
             Master Your Money <br />
-            <span className="text-slate-400">Without the Stress</span>
+            <span className="text-black">Without the Stress</span>
           </motion.h1>
 
           {/* Subheadline */}
           <motion.p 
             variants={itemVariants}
-            className="text-lg md:text-xl font-serif text-slate-500 max-w-2xl mb-10 leading-relaxed"
+            className="text-lg md:text-xl font-serif text-black max-w-2xl mb-10 leading-relaxed"
           >
             Track expenses, visualize income, and master your money flow with a minimalist dashboard designed for focus.
           </motion.p>
@@ -121,6 +124,24 @@ export default function Home() {
                  Learn More
                </Button>
             </Link>
+          </motion.div>
+
+          {/* Dashboard Preview Image */}
+          <motion.div
+            variants={itemVariants}
+            className="mt-20 relative w-full max-w-5xl px-4"
+          >
+            {/* Image Glow - Pink/Violet/Peach */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%] bg-gradient-to-tr from-pink-500/20 via-violet-500/20 to-orange-400/20 blur-[90px] -z-10 rounded-full" />
+            
+            {/* Image Container */}
+            <div className="relative rounded-xl border border-gray-200/50 shadow-2xl overflow-hidden bg-white/50 backdrop-blur-sm ring-1 ring-black/5">
+              <img 
+                src="/image of get started.png" 
+                alt="FinTrack Dashboard Preview" 
+                className="w-full h-auto object-cover"
+              />
+            </div>
           </motion.div>
         </motion.div>
       </section>

@@ -21,7 +21,7 @@ export default async function AccountsPage() {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {accounts.map((account) => (
-          <Card key={account.id}>
+          <Card key={account.id} className="bg-white/20 backdrop-blur-md border-white/20 shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 {account.name}

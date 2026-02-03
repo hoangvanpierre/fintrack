@@ -17,6 +17,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { LogOut, Settings, User } from "lucide-react"
 import { signOut } from "next-auth/react"
+import { useTheme } from "next-themes"
 
 interface UserNavProps {
   user: {
@@ -27,6 +28,8 @@ interface UserNavProps {
 }
 
 export function UserNav({ user }: UserNavProps) {
+  const { setTheme } = useTheme()
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -58,7 +61,13 @@ export function UserNav({ user }: UserNavProps) {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/login" })} className="text-red-600 focus:text-red-600 cursor-pointer">
+        <DropdownMenuItem 
+            onClick={() => {
+                setTheme("light")
+                signOut({ callbackUrl: "/login" })
+            }} 
+            className="text-red-600 focus:text-red-600 cursor-pointer"
+        >
           <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>
         </DropdownMenuItem>

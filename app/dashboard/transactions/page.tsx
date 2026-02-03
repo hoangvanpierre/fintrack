@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth"
-import { getTransactionsByUserId } from "@/services/transaction.service"
+import { getTransactionsByUserId, getUserCategories } from "@/services/transaction.service"
+import { getUserAccounts } from "@/services/account.service"
 import { TransactionTable } from "@/components/features/transactions/TransactionTable"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
@@ -9,7 +10,13 @@ export default async function TransactionsPage() {
 
   if (!user?.id) return null
 
-  const rawTransactions = await getTransactionsByUserId(user.id)
+  // Parallel fetching
+  const [rawTransactions, categories, accounts] = await Promise.all([
+    getTransactionsByUserId(user.id),
+    getUserCategories(user.id),
+    getUserAccounts(user.id)
+  ])
+
   const transactions = rawTransactions.map((t) => ({
     ...t,
     amount: t.amount.toNumber(),
@@ -25,12 +32,16 @@ export default async function TransactionsPage() {
         <h1 className="text-3xl font-bold tracking-tight">Transactions</h1>
       </div>
 
-      <Card>
+      <Card className="bg-white/20 backdrop-blur-md border-white/20 shadow-sm">
         <CardHeader>
           <CardTitle>History</CardTitle>
         </CardHeader>
         <CardContent>
-          <TransactionTable data={transactions as any[]} />
+          <TransactionTable 
+            data={transactions as any[]} 
+            categories={categories}
+            accounts={accounts}
+          />
         </CardContent>
       </Card>
     </div>

@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/table"
 import { format } from "date-fns"
 import { Badge } from "@/components/ui/badge"
+import { TransactionActions } from "./TransactionActions"
 
 interface Transaction {
   id: string
@@ -28,11 +29,13 @@ interface Transaction {
 
 interface Props {
   data: Transaction[]
+  categories: any[]
+  accounts: any[]
 }
 
-export function TransactionTable({ data }: Props) {
+export function TransactionTable({ data, categories, accounts }: Props) {
   return (
-    <div className="rounded-md border bg-white overflow-hidden">
+    <div className="rounded-md border border-white/20 bg-transparent overflow-hidden">
       <div className="overflow-x-auto">
         <Table className="min-w-[600px]">
           <TableHeader>
@@ -42,12 +45,13 @@ export function TransactionTable({ data }: Props) {
             <TableHead>Category</TableHead>
             <TableHead>Account</TableHead>
             <TableHead className="text-right">Amount</TableHead>
+            <TableHead className="w-[50px]"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {data.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={5} className="h-24 text-center">
+              <TableCell colSpan={6} className="h-24 text-center">
                 No transactions found.
               </TableCell>
             </TableRow>
@@ -72,6 +76,13 @@ export function TransactionTable({ data }: Props) {
                     style: 'currency',
                     currency: 'VND',
                   }).format(Number(t.amount))}
+                </TableCell>
+                <TableCell>
+                  <TransactionActions 
+                    transaction={t} 
+                    categories={categories} 
+                    accounts={accounts} 
+                  />
                 </TableCell>
               </TableRow>
             ))

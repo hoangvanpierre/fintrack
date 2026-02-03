@@ -5,6 +5,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import prisma from "@/lib/prisma"
 import bcrypt from "bcryptjs"
 import { LoginSchema } from "@/schemas/auth.schema"
+import { TransactionType } from "@prisma/client"
 
 const DEFAULT_CATEGORIES = [
   { name: 'Housing', type: 'EXPENSE', icon: 'home', color: '#ef4444' },
@@ -81,10 +82,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       // 2. Create Default Categories
       await prisma.category.createMany({
         data: DEFAULT_CATEGORIES.map(cat => ({
-          ...cat,
-          // @ts-ignore
-          type: cat.type, 
-          userId: user.id
+          name: cat.name,
+          icon: cat.icon,
+          color: cat.color,
+          type: cat.type as TransactionType, 
+          userId: user.id!
         }))
       });
       

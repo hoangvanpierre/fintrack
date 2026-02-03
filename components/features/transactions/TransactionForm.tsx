@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { TransactionSchema, TransactionFormValues } from "@/schemas/transaction.schema"
-import { createTransaction } from "@/app/actions/transaction.actions"
+import { createTransaction, updateTransaction } from "@/app/actions/transaction.actions"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -27,24 +27,34 @@ interface Props {
   categories: any[];
   accounts: any[];
   onSuccess: () => void;
+  initialData?: any; // For edit mode
 }
 
-export function TransactionForm({ categories, accounts, onSuccess }: Props) {
+export function TransactionForm({ categories, accounts, onSuccess, initialData }: Props) {
   const [loading, setLoading] = useState(false);
 
   const form = useForm<TransactionFormValues>({
-    resolver: zodResolver(TransactionSchema),
+    resolver: zodResolver(TransactionSchema) as any,
     defaultValues: {
-      amount: 0,
-      description: "",
-      date: new Date(),
-      type: "EXPENSE",
+      amount: initialData?.amount || 0,
+      description: initialData?.description || "",
+      date: initialData?.date ? new Date(initialData.date) : new Date(),
+      type: initialData?.type || "EXPENSE",
+      categoryId: initialData?.categoryId || undefined,
+      accountId: initialData?.accountId || undefined,
     },
   })
 
   async function onSubmit(data: TransactionFormValues) {
     setLoading(true);
-    const res = await createTransaction(data);
+    let res;
+
+    if (initialData) {
+        res = await updateTransaction(initialData.id, data);
+    } else {
+        res = await createTransaction(data);
+    }
+    
     setLoading(false);
 
     if (res?.success) {
@@ -200,7 +210,7 @@ export function TransactionForm({ categories, accounts, onSuccess }: Props) {
 
         <Button type="submit" className="w-full" disabled={loading}>
           {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Add Transaction
+          {initialData ? "Update Transaction" : "Add Transaction"}
         </Button>
       </form>
     </Form>

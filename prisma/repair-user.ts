@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, TransactionType } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
@@ -40,9 +40,10 @@ async function main() {
       if (catCount === 0) {
         await prisma.category.createMany({
           data: DEFAULT_CATEGORIES.map(cat => ({
-            ...cat,
-            // @ts-ignore
-            type: cat.type, 
+            name: cat.name,
+            icon: cat.icon,
+            color: cat.color,
+            type: cat.type as TransactionType,
             userId: user.id
           }))
         })

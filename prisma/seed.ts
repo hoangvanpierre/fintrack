@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { AccountType, PrismaClient, TransactionType } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
@@ -31,7 +31,9 @@ async function main() {
   for (const acc of accounts) {
     await prisma.userAccount.create({
       data: {
-        ...acc,
+        name: acc.name,
+        type: acc.type as AccountType,
+        balance: acc.balance,
         userId: user.id
       }
     })
@@ -54,15 +56,13 @@ async function main() {
         name_userId_type: {
           name: cat.name,
           userId: user.id,
-          // @ts-ignore: Enum typing issue in seed script is common before generation
-          type: cat.type 
+          type: cat.type as TransactionType
         }
       },
       update: {},
       create: {
         name: cat.name,
-        // @ts-ignore
-        type: cat.type,
+        type: cat.type as TransactionType,
         icon: cat.icon,
         color: cat.color,
         userId: user.id

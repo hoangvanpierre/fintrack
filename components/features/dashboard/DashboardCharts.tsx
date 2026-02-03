@@ -48,7 +48,7 @@ export function DashboardCharts({ data }: { data: any[] }) {
                       width={60}
                       tickFormatter={(value) => new Intl.NumberFormat('en', { notation: "compact" }).format(value)}
                     />          <Tooltip 
-             formatter={(value) => [`${value.toLocaleString('vi-VN')} ₫`, 'Net Flow']}
+             formatter={(value: any) => [`${(Number(value) || 0).toLocaleString('vi-VN')} ₫`, 'Net Flow']}
           />
           <Area 
             type="monotone" 
@@ -90,7 +90,7 @@ export function IncomeExpenseBarChart({ data }: { data: any[] }) {
                       tickFormatter={(value) => new Intl.NumberFormat('en', { notation: "compact" }).format(value)}
                     />          <Tooltip 
             cursor={{ fill: 'transparent' }}
-            formatter={(value) => [`${value.toLocaleString('vi-VN')} ₫`, '']}
+            formatter={(value: any) => [`${(Number(value) || 0).toLocaleString('vi-VN')} ₫`, '']}
           />
           <Legend />
           <Bar dataKey="income" name="Income" fill="#10b981" radius={[4, 4, 0, 0]} />
@@ -138,7 +138,7 @@ export function ExpensePieChart({ data }: { data: any[] }) {
               <Cell key={`cell-${index}`} fill={entry.color} />
             ))}
           </Pie>
-          <Tooltip formatter={(value) => `${value.toLocaleString('vi-VN')} ₫`} />
+          <Tooltip formatter={(value: any) => `${(Number(value) || 0).toLocaleString('vi-VN')} ₫`} />
           <Legend layout="horizontal" verticalAlign="bottom" align="center" />
         </PieChart>
       </ResponsiveContainer>

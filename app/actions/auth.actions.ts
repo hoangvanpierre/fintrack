@@ -6,6 +6,7 @@ import prisma from "@/lib/prisma";
 import { RegisterSchema } from "@/schemas/auth.schema";
 import { signIn, signOut } from "@/lib/auth";
 import { AuthError } from "next-auth";
+import { TransactionType } from "@prisma/client";
 
 export const logout = async () => {
   await signOut({ redirectTo: "/login" });
@@ -68,9 +69,10 @@ async function seedNewUser(userId: string) {
 
     await prisma.category.createMany({
         data: DEFAULT_CATEGORIES.map(cat => ({
-            ...cat,
-            // @ts-ignore
-            type: cat.type, 
+            name: cat.name,
+            icon: cat.icon,
+            color: cat.color,
+            type: cat.type as TransactionType,
             userId: userId
         }))
     });

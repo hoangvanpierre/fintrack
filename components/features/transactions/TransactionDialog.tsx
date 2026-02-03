@@ -15,26 +15,31 @@ import { Plus } from "lucide-react"
 interface Props {
   categories: any[];
   accounts: any[];
+  trigger?: React.ReactNode;
+  initialData?: any;
 }
 
-export function TransactionDialog({ categories, accounts }: Props) {
+export function TransactionDialog({ categories, accounts, trigger, initialData }: Props) {
   const [open, setOpen] = useState(false);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm" className="gap-2">
-          <Plus className="h-4 w-4" /> Add Transaction
-        </Button>
+        {trigger ? trigger : (
+          <Button size="sm" className="gap-2">
+            <Plus className="h-4 w-4" /> Add Transaction
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Add Transaction</DialogTitle>
+          <DialogTitle>{initialData ? "Edit Transaction" : "Add Transaction"}</DialogTitle>
         </DialogHeader>
         <TransactionForm 
           categories={categories} 
           accounts={accounts} 
-          onSuccess={() => setOpen(false)} 
+          onSuccess={() => setOpen(false)}
+          initialData={initialData}
         />
       </DialogContent>
     </Dialog>

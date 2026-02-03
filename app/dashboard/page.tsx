@@ -1,11 +1,12 @@
 import { auth } from "@/lib/auth"
-import { getTotalBalance } from "@/services/account.service"
+import { getTotalBalance, getUserAccounts } from "@/services/account.service"
 import { 
   getStats, 
   getRecentTransactions, 
   getCashflowData,
   getExpenseByCategory,
-  getIncomeVsExpense
+  getIncomeVsExpense,
+  getUserCategories
 } from "@/services/transaction.service"
 import { DashboardView } from "@/components/features/dashboard/DashboardView"
 
@@ -28,14 +29,18 @@ export default async function DashboardPage({
     recentTransactions, 
     cashflowData,
     expenseByCategory,
-    incomeVsExpense
+    incomeVsExpense,
+    categories,
+    accounts
   ] = await Promise.all([
     getTotalBalance(user.id),
     getStats(user.id, from, to),
     getRecentTransactions(user.id, from, to),
     getCashflowData(user.id, from, to),
     getExpenseByCategory(user.id, from, to),
-    getIncomeVsExpense(user.id, from, to)
+    getIncomeVsExpense(user.id, from, to),
+    getUserCategories(user.id),
+    getUserAccounts(user.id)
   ])
 
   return (
@@ -46,6 +51,8 @@ export default async function DashboardPage({
       cashflowData={cashflowData}
       expenseByCategory={expenseByCategory}
       incomeVsExpense={incomeVsExpense}
+      categories={categories}
+      accounts={accounts}
     />
   )
 }

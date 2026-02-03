@@ -8,6 +8,7 @@ import { LiquidTabs } from "@/components/ui/liquid-tabs"
 import { format } from "date-fns"
 
 import { CalendarDateRangePicker } from "@/components/features/dashboard/DateRangePicker"
+import { TransactionActions } from "../transactions/TransactionActions"
 
 // Helper to format money
 const formatCurrency = (amount: number) => {
@@ -45,6 +46,8 @@ interface DashboardViewProps {
   cashflowData: any[]
   expenseByCategory: any[]
   incomeVsExpense: any[]
+  categories: any[]
+  accounts: any[]
 }
 
 export function DashboardView({
@@ -53,14 +56,16 @@ export function DashboardView({
   recentTransactions,
   cashflowData,
   expenseByCategory,
-  incomeVsExpense
+  incomeVsExpense,
+  categories,
+  accounts
 }: DashboardViewProps) {
   const [activeTab, setActiveTab] = useState("overview")
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <h2 className="text-3xl font-bold tracking-tight text-gray-900">Dashboard</h2>
+        <h2 className="text-3xl font-bold tracking-tight text-foreground">Dashboard</h2>
         <div className="flex flex-col sm:flex-row items-center gap-4">
           <CalendarDateRangePicker />
           <LiquidTabs 
@@ -75,7 +80,7 @@ export function DashboardView({
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
           {/* Stats Row */}
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card className="bg-white/20 backdrop-blur-md border-white/10 shadow-sm">
+            <Card className="bg-white/20 backdrop-blur-md border-white/20 shadow-sm">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Total Balance</CardTitle>
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
@@ -88,7 +93,7 @@ export function DashboardView({
               </CardContent>
             </Card>
             
-            <Card className="bg-white/20 backdrop-blur-md border-white/10 shadow-sm">
+            <Card className="bg-white/20 backdrop-blur-md border-white/20 shadow-sm">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Income (This Month)</CardTitle>
                 <ArrowUpIcon className="h-4 w-4 text-emerald-500" />
@@ -98,7 +103,7 @@ export function DashboardView({
               </CardContent>
             </Card>
             
-            <Card className="bg-white/20 backdrop-blur-md border-white/10 shadow-sm">
+            <Card className="bg-white/20 backdrop-blur-md border-white/20 shadow-sm">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Expenses (This Month)</CardTitle>
                 <ArrowDownIcon className="h-4 w-4 text-red-500" />
@@ -108,7 +113,7 @@ export function DashboardView({
               </CardContent>
             </Card>
 
-            <Card className="bg-white/20 backdrop-blur-md border-white/10 shadow-sm">
+            <Card className="bg-white/20 backdrop-blur-md border-white/20 shadow-sm">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Net Savings</CardTitle>
                 <WalletIcon className="h-4 w-4 text-blue-500" />
@@ -123,7 +128,7 @@ export function DashboardView({
 
           {/* Row 2: Cash Flow & Recent Transactions */}
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-            <Card className="col-span-1 md:col-span-2 lg:col-span-4 bg-white/20 backdrop-blur-md border-white/10 shadow-sm">
+            <Card className="col-span-1 md:col-span-2 lg:col-span-4 bg-white/20 backdrop-blur-md border-white/20 shadow-sm">
               <CardHeader>
                 <CardTitle>Cash Flow History</CardTitle>
               </CardHeader>
@@ -132,17 +137,17 @@ export function DashboardView({
               </CardContent>
             </Card>
 
-            <Card className="col-span-1 md:col-span-2 lg:col-span-3 bg-white/20 backdrop-blur-md border-white/10 shadow-sm">
+            <Card className="col-span-1 md:col-span-2 lg:col-span-3 bg-white/20 backdrop-blur-md border-white/20 shadow-sm">
               <CardHeader>
                 <CardTitle>Recent Transactions</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4 h-[300px] overflow-y-auto pr-2 glass-scrollbar">
                    {recentTransactions.length === 0 ? (
-                     <p className="text-sm text-gray-500">No transactions yet.</p>
+                     <p className="text-sm text-muted-foreground">No transactions yet.</p>
                    ) : (
                      recentTransactions.map((t) => (
-                       <div key={t.id} className="flex items-center justify-between">
+                       <div key={t.id} className="flex items-center justify-between group">
                           <div className="flex items-center gap-3">
                             <div 
                               className="w-9 h-9 rounded-full flex items-center justify-center text-lg shadow-sm"
@@ -157,13 +162,24 @@ export function DashboardView({
                               </span>
                             </div>
                             <div>
-                              <p className="text-sm font-medium text-gray-900">{t.description || t.category.name}</p>
-                              <p className="text-xs text-gray-500">{format(new Date(t.date), 'MMM d, yyyy')}</p>
+                              <p className="text-sm font-medium text-foreground">{t.category.name}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {t.description ? `${t.description} • ` : ''}{format(new Date(t.date), 'MMM d, yyyy')}
+                              </p>
                             </div>
                           </div>
-                          <span className={`text-sm font-bold ${t.type === 'INCOME' ? 'text-green-600' : 'text-red-600'}`}>
-                            {t.type === 'INCOME' ? '+' : '-'}{formatCurrency(Number(t.amount))}
-                          </span>
+                          
+                          <div className="flex items-center gap-4">
+                            <span className={`text-sm font-bold ${t.type === 'INCOME' ? 'text-green-600' : 'text-red-600'}`}>
+                                {t.type === 'INCOME' ? '+' : '-'}{formatCurrency(Number(t.amount))}
+                            </span>
+                            
+                            <TransactionActions 
+                                transaction={t} 
+                                categories={categories} 
+                                accounts={accounts} 
+                            />
+                          </div>
                        </div>
                      ))
                    )}
@@ -174,7 +190,7 @@ export function DashboardView({
 
           {/* Row 3: Income vs Expense & Expense Breakdown */}
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-            <Card className="col-span-1 md:col-span-2 lg:col-span-4 bg-white/20 backdrop-blur-md border-white/10 shadow-sm">
+            <Card className="col-span-1 md:col-span-2 lg:col-span-4 bg-white/20 backdrop-blur-md border-white/20 shadow-sm">
               <CardHeader>
                 <CardTitle>Income vs Expense (6 Months)</CardTitle>
               </CardHeader>
@@ -183,7 +199,7 @@ export function DashboardView({
               </CardContent>
             </Card>
 
-            <Card className="col-span-1 md:col-span-2 lg:col-span-3 bg-white/20 backdrop-blur-md border-white/10 shadow-sm">
+            <Card className="col-span-1 md:col-span-2 lg:col-span-3 bg-white/20 backdrop-blur-md border-white/20 shadow-sm">
               <CardHeader>
                 <CardTitle>Expenses by Category</CardTitle>
               </CardHeader>

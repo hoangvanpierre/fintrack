@@ -35,7 +35,7 @@ export function GlassNavbar({ user, accounts, categories }: GlassNavbarProps) {
         <div className="hidden md:flex items-center gap-2 mr-8">
           <Link 
             href="/dashboard" 
-            className="text-xl font-bold tracking-[-0.085em] text-gray-900 transition-opacity hover:opacity-80"
+            className="text-xl font-bold tracking-[-0.085em] text-foreground transition-opacity hover:opacity-80"
           >
             fintrack
           </Link>
@@ -52,8 +52,8 @@ export function GlassNavbar({ user, accounts, categories }: GlassNavbarProps) {
                 className={cn(
                   "px-4 py-2 rounded-full transition-all duration-200",
                   isActive 
-                    ? "text-gray-900 bg-white/40 shadow-sm backdrop-blur-sm font-semibold border border-white/20" 
-                    : "text-gray-500 hover:text-gray-900 hover:bg-white/10"
+                    ? "text-foreground bg-white/40 shadow-sm backdrop-blur-sm font-semibold border border-white/20" 
+                    : "text-muted-foreground hover:text-foreground hover:bg-white/10"
                 )}
               >
                 {link.label}

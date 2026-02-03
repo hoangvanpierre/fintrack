@@ -23,6 +23,7 @@ model User {
   image         String?
   password      String?   // Hashed password for Credentials Auth
   currency      String    @default("VND") // User preference
+  theme         String    @default("system") // User theme preference (light, dark, system)
 
   accounts      Account[] // NextAuth Accounts (OAuth)
   sessions      Session[] // NextAuth Sessions

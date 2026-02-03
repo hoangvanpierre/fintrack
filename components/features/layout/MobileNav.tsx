@@ -14,6 +14,7 @@ import {
 import Link from "next/link"
 import { useState } from "react"
 import { logout } from "@/app/actions/auth.actions"
+import { useTheme } from "next-themes"
 
 interface MobileNavProps {
   user: {
@@ -25,6 +26,7 @@ interface MobileNavProps {
 
 export function MobileNav({ user }: MobileNavProps) {
   const [open, setOpen] = useState(false)
+  const { setTheme } = useTheme()
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -36,7 +38,9 @@ export function MobileNav({ user }: MobileNavProps) {
       </SheetTrigger>
       <SheetContent side="left" className="w-[300px] sm:w-[400px] flex flex-col">
         <SheetHeader className="border-b pb-4 mb-4">
-          <SheetTitle className="text-left text-2xl font-bold tracking-[-0.085em]">fintrack</SheetTitle>
+          <SheetTitle className="text-left text-2xl font-bold tracking-[-0.085em] text-foreground">
+                fintrack
+          </SheetTitle>
         </SheetHeader>
         <nav className="flex flex-col space-y-2 flex-1">
           <Link href="/dashboard" onClick={() => setOpen(false)}>
@@ -73,13 +77,14 @@ export function MobileNav({ user }: MobileNavProps) {
             </Avatar>
             <div className="flex-1 overflow-hidden">
               <p className="text-sm font-medium truncate">{user?.name}</p>
-              <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+              <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
             </div>
           </div>
           <Button 
                 variant="ghost" 
                 className="w-full justify-start gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
                 onClick={async () => {
+                    setTheme("light");
                     await logout();
                     setOpen(false);
                 }}
