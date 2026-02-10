@@ -6,7 +6,7 @@ import { TransactionSchema } from "@/schemas/transaction.schema";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-export async function createTransaction(formData: any) {
+export async function createTransaction(formData: unknown) {
   const session = await auth();
   if (!session?.user?.id) {
     throw new Error("Unauthorized");
@@ -109,7 +109,7 @@ export async function deleteTransaction(transactionId: string) {
   }
 }
 
-export async function updateTransaction(transactionId: string, formData: any) {
+export async function updateTransaction(transactionId: string, formData: unknown) {
   const session = await auth();
   if (!session?.user?.id) {
     throw new Error("Unauthorized");

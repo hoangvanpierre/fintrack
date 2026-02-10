@@ -15,8 +15,13 @@ const dmSerif = DM_Serif_Text({
 });
 
 export const metadata: Metadata = {
-  title: "FinTrack - Personal Expense Management",
+  title: "fintrack - Personal Expense Management",
   description: "Track your expenses and income with ease.",
+  icons: {
+    icon: "/fintrack.png?v=2",
+    shortcut: "/fintrack.png?v=2",
+    apple: "/fintrack.png?v=2",
+  },
 };
 
 export default function RootLayout({

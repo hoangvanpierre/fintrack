@@ -5,7 +5,7 @@ import prisma from "@/lib/prisma";
 import { AccountSchema } from "@/schemas/account.schema";
 import { revalidatePath } from "next/cache";
 
-export async function createAccount(formData: any) {
+export async function createAccount(formData: unknown) {
   const session = await auth();
   if (!session?.user?.id) {
     throw new Error("Unauthorized");

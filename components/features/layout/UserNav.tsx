@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button"
 import { LogOut, Settings, User } from "lucide-react"
 import { signOut } from "next-auth/react"
 import { useTheme } from "next-themes"
+import Link from "next/link"
 
 interface UserNavProps {
   user: {
@@ -33,9 +34,9 @@ export function UserNav({ user }: UserNavProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-          <Avatar className="h-8 w-8">
-            <AvatarImage src={user?.image || ""} alt={user?.name || ""} />
+        <Button variant="ghost" className="relative h-9 w-9 rounded-full p-0 overflow-hidden border border-white/20 shadow-sm">
+          <Avatar className="h-9 w-9">
+            <AvatarImage src={user?.image || ""} alt={user?.name || ""} className="object-cover" />
             <AvatarFallback>{user?.name?.charAt(0)}</AvatarFallback>
           </Avatar>
         </Button>
@@ -51,14 +52,18 @@ export function UserNav({ user }: UserNavProps) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <User className="mr-2 h-4 w-4" />
-            <span>Profile</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Settings className="mr-2 h-4 w-4" />
-            <span>Settings</span>
-          </DropdownMenuItem>
+          <Link href="/dashboard/settings">
+            <DropdownMenuItem className="cursor-pointer">
+              <User className="mr-2 h-4 w-4" />
+              <span>Profile</span>
+            </DropdownMenuItem>
+          </Link>
+          <Link href="/dashboard/settings">
+            <DropdownMenuItem className="cursor-pointer">
+              <Settings className="mr-2 h-4 w-4" />
+              <span>Settings</span>
+            </DropdownMenuItem>
+          </Link>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem 

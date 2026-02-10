@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth"
+import prisma from "@/lib/prisma"
 import { getTotalBalance, getUserAccounts } from "@/services/account.service"
 import { 
   getStats, 
@@ -31,7 +32,8 @@ export default async function DashboardPage({
     expenseByCategory,
     incomeVsExpense,
     categories,
-    accounts
+    accounts,
+    dbUser
   ] = await Promise.all([
     getTotalBalance(user.id),
     getStats(user.id, from, to),
@@ -40,11 +42,14 @@ export default async function DashboardPage({
     getExpenseByCategory(user.id, from, to),
     getIncomeVsExpense(user.id, from, to),
     getUserCategories(user.id),
-    getUserAccounts(user.id)
+    getUserAccounts(user.id),
+    prisma.user.findUnique({ where: { id: user.id }, select: { monthlyBudget: true } })
   ])
 
   return (
     <DashboardView 
+      user={user}
+      monthlyBudget={dbUser?.monthlyBudget?.toNumber() || 0}
       totalBalance={totalBalance}
       monthlyStats={monthlyStats}
       recentTransactions={recentTransactions.map(t => ({ ...t, amount: t.amount.toNumber() }))}

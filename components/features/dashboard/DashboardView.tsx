@@ -40,6 +40,10 @@ function WalletIcon(props: any) {
 }
 
 interface DashboardViewProps {
+  user?: {
+    name?: string | null
+  }
+  monthlyBudget: number
   totalBalance: number
   monthlyStats: { income: number; expense: number }
   recentTransactions: any[]
@@ -51,6 +55,8 @@ interface DashboardViewProps {
 }
 
 export function DashboardView({
+  user,
+  monthlyBudget,
   totalBalance,
   monthlyStats,
   recentTransactions,
@@ -62,22 +68,64 @@ export function DashboardView({
 }: DashboardViewProps) {
   const [activeTab, setActiveTab] = useState("overview")
 
+  const getTimeGreeting = () => {
+    const hour = new Date().getHours()
+    if (hour < 12) return "Good morning"
+    if (hour < 18) return "Good afternoon"
+    return "Good evening"
+  }
+  
+  // Budget Logic
+  const budgetPercentage = monthlyBudget > 0 ? (monthlyStats.expense / monthlyBudget) * 100 : 0;
+  const isOverBudget = budgetPercentage > 100;
+  const progressColor = isOverBudget ? 'bg-red-500' : 'bg-slate-900 dark:bg-slate-100';
+
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <h2 className="text-3xl font-bold tracking-tight text-foreground">Dashboard</h2>
-        <div className="flex flex-col sm:flex-row items-center gap-4">
-          <CalendarDateRangePicker />
-          <LiquidTabs 
-            tabs={["Overview", "Analytics", "Reports"]} 
-            activeTab={activeTab} 
-            setActiveTab={setActiveTab} 
-          />
+      <div className="flex flex-col gap-1">
+        <h1 className="text-sm font-medium text-muted-foreground/80 tracking-wide uppercase">
+          {getTimeGreeting()}, {user?.name?.split(' ')[0] || 'there'} 👋
+        </h1>
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <h2 className="text-3xl font-bold tracking-tight text-foreground">Dashboard</h2>
+          <div className="flex flex-col sm:flex-row items-center gap-4">
+            <CalendarDateRangePicker />
+            <LiquidTabs 
+              tabs={["Overview", "Analytics", "Reports"]} 
+              activeTab={activeTab} 
+              setActiveTab={setActiveTab} 
+            />
+          </div>
         </div>
       </div>
 
       {activeTab === "overview" && (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          
+          {/* Budget Progress Bar (Only if budget is set) */}
+          {monthlyBudget > 0 && (
+            <Card className="bg-white/40 backdrop-blur-md border-white/20 shadow-sm overflow-hidden">
+               <div className={`h-1 w-full ${isOverBudget ? 'bg-red-100' : 'bg-slate-100'}`}>
+                  <div 
+                    className={`h-full transition-all duration-500 ${progressColor}`} 
+                    style={{ width: `${Math.min(budgetPercentage, 100)}%` }} 
+                  />
+               </div>
+               <CardContent className="pt-4 pb-4 flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Monthly Budget</p>
+                    <p className="text-2xl font-bold">{formatCurrency(monthlyStats.expense)} <span className="text-muted-foreground text-sm font-normal">/ {formatCurrency(monthlyBudget)}</span></p>
+                  </div>
+                  <div className="text-right">
+                    <p className={`text-xl font-bold ${isOverBudget ? 'text-red-600' : 'text-slate-900'}`}>
+                        {budgetPercentage.toFixed(0)}%
+                    </p>
+                    <p className="text-xs text-muted-foreground">{isOverBudget ? 'Over Budget' : 'Used'}</p>
+                  </div>
+               </CardContent>
+            </Card>
+          )}
+
           {/* Stats Row */}
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card className="bg-white/20 backdrop-blur-md border-white/20 shadow-sm">

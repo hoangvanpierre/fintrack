@@ -27,7 +27,8 @@ export function TransactionDialog({ categories, accounts, trigger, initialData }
       <DialogTrigger asChild>
         {trigger ? trigger : (
           <Button size="sm" className="gap-2">
-            <Plus className="h-4 w-4" /> Add Transaction
+            <Plus className="h-4 w-4" /> 
+            <span className="hidden sm:inline">Add Transaction</span>
           </Button>
         )}
       </DialogTrigger>

@@ -43,7 +43,6 @@ export default function Home() {
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-500">
           <Link href="#" className="hover:text-black transition-colors">Home</Link>
           <Link href="#features" className="hover:text-black transition-colors">Features</Link>
-          <Link href="#pricing" className="hover:text-black transition-colors">Pricing</Link>
         </div>
 
         {/* Mobile Menu */}
@@ -58,7 +57,6 @@ export default function Home() {
               <div className="flex flex-col gap-6 mt-10">
                 <Link href="#" className="text-lg font-medium">Home</Link>
                 <Link href="#features" className="text-lg font-medium">Features</Link>
-                <Link href="#pricing" className="text-lg font-medium">Pricing</Link>
                 <hr />
                 <Link href="/login" className="text-lg font-medium">Log in</Link>
                 <Link href="/login">
@@ -150,7 +148,7 @@ export default function Home() {
       <section id="features" className="py-24 bg-slate-50 px-6 md:px-12">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-serif mb-4">Everything you need, nothing you don't.</h2>
+            <h2 className="text-3xl md:text-4xl font-serif mb-4">Everything you need, nothing you don&apos;t.</h2>
             <p className="text-slate-500 max-w-2xl mx-auto">We stripped away the clutter to focus on the three pillars of personal finance: Clarity, Control, and Consistency.</p>
           </div>
           
@@ -195,7 +193,7 @@ export default function Home() {
              <div className="absolute inset-0 bg-gradient-to-br from-blue-100 to-purple-100 opacity-50" />
              <div className="relative z-10 text-center">
                 <span className="text-6xl">🙌</span>
-                <p className="mt-4 font-medium text-slate-600">"Finally, a finance app that doesn't feel like a spreadsheet."</p>
+                <p className="mt-4 font-medium text-slate-600">&quot;Finally, a finance app that doesn&apos;t feel like a spreadsheet.&quot;</p>
              </div>
           </div>
         </div>

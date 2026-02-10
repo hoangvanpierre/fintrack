@@ -24,6 +24,8 @@ model User {
   password      String?   // Hashed password for Credentials Auth
   currency      String    @default("VND") // User preference
   theme         String    @default("system") // User theme preference (light, dark, system)
+  monthlyBudget Decimal?  @db.Decimal(20, 2) // Spending limit target
+  financialGoal String?   // e.g. "Save for a car"
 
   accounts      Account[] // NextAuth Accounts (OAuth)
   sessions      Session[] // NextAuth Sessions

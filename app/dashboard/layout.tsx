@@ -18,14 +18,17 @@ export default async function DashboardLayout({
   const [accounts, categories, dbUser] = user?.id ? await Promise.all([
     getUserAccounts(user.id),
     getUserCategories(user.id),
-    prisma.user.findUnique({ where: { id: user.id }, select: { theme: true } })
+    prisma.user.findUnique({ 
+      where: { id: user.id }, 
+      select: { theme: true, image: true, name: true, email: true } 
+    })
   ]) : [[], [], null];
 
   return (
     <div className="min-h-screen flex flex-col relative">
       <ThemeRestorer userTheme={dbUser?.theme || "system"} />
       <MeshGradientBackground />
-      <GlassNavbar user={user} accounts={accounts} categories={categories} />
+      <GlassNavbar user={dbUser || user} accounts={accounts} categories={categories} />
 
       {/* Main Content */}
       <main className="flex-1 w-full max-w-7xl mx-auto p-4 md:p-8">
