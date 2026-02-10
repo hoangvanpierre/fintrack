@@ -23,6 +23,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     ...authConfig.providers.filter(p => p.id !== 'credentials'),
     Credentials({
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" }
+      },
       async authorize(credentials) {
         const validatedFields = LoginSchema.safeParse(credentials);
 
