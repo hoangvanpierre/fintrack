@@ -103,7 +103,7 @@ Follow these steps to run FinTrack locally on your machine.
    npm run dev
    ```
 
-6. Open [http://localhost:3000](http://localhost:3000) to see the app live.
+6. Open [https://fintrack-rho-inky.vercel.app](https://fintrack-rho-inky.vercel.app) to see the app live.
 
 ---
 
