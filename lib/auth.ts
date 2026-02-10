@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs"
 import { LoginSchema } from "@/schemas/auth.schema"
 import { TransactionType } from "@prisma/client"
 import authConfig from "./auth.config"
+import Credentials from "next-auth/providers/credentials"
 
 const DEFAULT_CATEGORIES = [
   { name: 'Housing', type: 'EXPENSE', icon: 'home', color: '#ef4444' },
@@ -20,12 +21,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   session: { strategy: "jwt" },
   ...authConfig,
   providers: [
-    // We re-define providers here to include the authorize logic
     ...authConfig.providers.filter(p => p.id !== 'credentials'),
-    {
-      id: "credentials",
-      name: "Credentials",
-      type: "credentials",
+    Credentials({
       async authorize(credentials) {
         const validatedFields = LoginSchema.safeParse(credentials);
 
@@ -48,7 +45,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         return null;
       }
-    }
+    })
   ],
   events: {
     createUser: async ({ user }) => {
