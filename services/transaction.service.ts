@@ -1,12 +1,25 @@
 import prisma from "@/lib/prisma";
-import { startOfMonth, subMonths, endOfMonth, format, parseISO } from "date-fns";
+import { startOfMonth, subMonths, endOfMonth, format, parseISO, endOfDay, startOfDay } from "date-fns";
 
 // Helper to determine date range
-const getDateFilter = (from?: string, to?: string, defaultStart?: Date, defaultEnd?: Date) => {
+const getDateFilter = (date?: string, from?: string, to?: string, defaultStart?: Date, defaultEnd?: Date) => {
+  if (date) {
+    const d = parseISO(date);
+    return {
+      gte: startOfDay(d),
+      lte: endOfDay(d)
+    };
+  }
   if (from && to) {
     return {
       gte: parseISO(from),
-      lte: parseISO(to)
+      lte: endOfDay(parseISO(to))
+    };
+  }
+  if (from || to) {
+    return {
+      gte: from ? parseISO(from) : undefined,
+      lte: to ? endOfDay(parseISO(to)) : undefined
     };
   }
   return {
@@ -26,31 +39,28 @@ export const getTransactionsByUserId = async (userId: string) => {
   });
 };
 
-export const getRecentTransactions = async (userId: string, from?: string, to?: string) => {
-  const dateFilter = from && to ? {
-    gte: parseISO(from),
-    lte: parseISO(to)
-  } : undefined;
+export const getRecentTransactions = async (userId: string, date?: string, from?: string, to?: string) => {
+  const dateFilter = getDateFilter(date, from, to);
 
   return await prisma.transaction.findMany({
     where: { 
       userId,
-      date: dateFilter
+      date: dateFilter.gte || dateFilter.lte ? dateFilter : undefined
     },
     orderBy: { date: 'desc' },
-    take: 20, // Increased limit to 20 as requested
+    take: 20,
     include: {
       category: true
     }
   });
 }
 
-export const getStats = async (userId: string, from?: string, to?: string) => {
+export const getStats = async (userId: string, date?: string, from?: string, to?: string) => {
   const now = new Date();
   const defaultStart = startOfMonth(now);
   const defaultEnd = endOfMonth(now);
 
-  const dateFilter = getDateFilter(from, to, defaultStart, defaultEnd);
+  const dateFilter = getDateFilter(date, from, to, defaultStart, defaultEnd);
 
   const stats = await prisma.transaction.groupBy({
     by: ['type'],
@@ -69,12 +79,11 @@ export const getStats = async (userId: string, from?: string, to?: string) => {
   return { income, expense };
 }
 
-export const getCashflowData = async (userId: string, from?: string, to?: string) => {
+export const getCashflowData = async (userId: string, date?: string, from?: string, to?: string) => {
   const today = new Date();
   const defaultStart = subMonths(today, 6);
   
-  // If user picks a range, we show that range. If not, last 6 months.
-  const dateFilter = getDateFilter(from, to, defaultStart, undefined);
+  const dateFilter = getDateFilter(date, from, to, defaultStart, undefined);
 
   const transactions = await prisma.transaction.findMany({
     where: {
@@ -89,33 +98,29 @@ export const getCashflowData = async (userId: string, from?: string, to?: string
     }
   });
 
-  // Group by Date or Month depending on range size?
-  // For simplicity, we stick to Month grouping for now, 
-  // but if the range is short (e.g. 1 month), day grouping might be better.
-  // Let's stick to Month grouping to keep charts consistent for now.
   const monthlyMap = new Map<string, number>();
 
   transactions.forEach(t => {
-    const monthKey = format(t.date, 'MMM yyyy'); // Included year to distinguish Jan 2025 vs Jan 2026
+    const monthKey = format(t.date, 'MMM yyyy');
     const val = t.type === 'INCOME' ? t.amount.toNumber() : -t.amount.toNumber();
     monthlyMap.set(monthKey, (monthlyMap.get(monthKey) || 0) + val);
   });
 
   return Array.from(monthlyMap.entries()).map(([name, total]) => ({ name, total }));
 }
-  
+
 export const getUserCategories = async (userId: string) => {
   return await prisma.category.findMany({
     where: { userId }
   });
 }
 
-export const getExpenseByCategory = async (userId: string, from?: string, to?: string) => {
+export const getExpenseByCategory = async (userId: string, date?: string, from?: string, to?: string) => {
   const now = new Date();
   const defaultStart = startOfMonth(now);
   const defaultEnd = endOfMonth(now);
 
-  const dateFilter = getDateFilter(from, to, defaultStart, defaultEnd);
+  const dateFilter = getDateFilter(date, from, to, defaultStart, defaultEnd);
 
   const transactions = await prisma.transaction.findMany({
     where: {
@@ -144,11 +149,11 @@ export const getExpenseByCategory = async (userId: string, from?: string, to?: s
   return Array.from(categoryMap.values()).sort((a, b) => b.value - a.value);
 };
 
-export const getIncomeVsExpense = async (userId: string, from?: string, to?: string) => {
+export const getIncomeVsExpense = async (userId: string, date?: string, from?: string, to?: string) => {
   const today = new Date();
   const defaultStart = subMonths(today, 6);
   
-  const dateFilter = getDateFilter(from, to, defaultStart, undefined);
+  const dateFilter = getDateFilter(date, from, to, defaultStart, undefined);
 
   const transactions = await prisma.transaction.findMany({
     where: {

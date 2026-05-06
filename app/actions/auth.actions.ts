@@ -57,7 +57,6 @@ async function seedNewUser(userId: string) {
         { name: 'Salary', type: 'INCOME', icon: 'wallet', color: '#22c55e' },
         { name: 'Freelance', type: 'INCOME', icon: 'laptop', color: '#0ea5e9' },
     ];
-
     await prisma.userAccount.create({
         data: {
             name: "Wallet",
@@ -66,7 +65,6 @@ async function seedNewUser(userId: string) {
             userId: userId
         }
     });
-
     await prisma.category.createMany({
         data: DEFAULT_CATEGORIES.map(cat => ({
             name: cat.name,

@@ -21,7 +21,7 @@ export default async function DashboardPage({
 
   if (!user?.id) return null
 
-  const { from, to } = await searchParams as { from?: string, to?: string };
+  const { from, to, date } = await searchParams as { from?: string, to?: string, date?: string };
 
   // Parallel Data Fetching
   const [
@@ -36,11 +36,11 @@ export default async function DashboardPage({
     dbUser
   ] = await Promise.all([
     getTotalBalance(user.id),
-    getStats(user.id, from, to),
-    getRecentTransactions(user.id, from, to),
-    getCashflowData(user.id, from, to),
-    getExpenseByCategory(user.id, from, to),
-    getIncomeVsExpense(user.id, from, to),
+    getStats(user.id, date, from, to),
+    getRecentTransactions(user.id, date, from, to),
+    getCashflowData(user.id, date, from, to),
+    getExpenseByCategory(user.id, date, from, to),
+    getIncomeVsExpense(user.id, date, from, to),
     getUserCategories(user.id),
     getUserAccounts(user.id),
     prisma.user.findUnique({ where: { id: user.id }, select: { monthlyBudget: true } })
@@ -58,6 +58,8 @@ export default async function DashboardPage({
       incomeVsExpense={incomeVsExpense}
       categories={categories}
       accounts={accounts}
+      dateRange={{ from, to }}
+      selectedDate={date}
     />
   )
 }

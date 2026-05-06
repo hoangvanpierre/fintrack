@@ -17,6 +17,7 @@ const DEFAULT_CATEGORIES = [
 ]
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  debug: false,
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
   ...authConfig,

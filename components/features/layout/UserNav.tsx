@@ -53,13 +53,13 @@ export function UserNav({ user }: UserNavProps) {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <Link href="/dashboard/settings">
-            <DropdownMenuItem className="cursor-pointer">
+            <DropdownMenuItem className="cursor-pointer font-medium">
               <User className="mr-2 h-4 w-4" />
               <span>Profile</span>
             </DropdownMenuItem>
           </Link>
           <Link href="/dashboard/settings">
-            <DropdownMenuItem className="cursor-pointer">
+            <DropdownMenuItem className="cursor-pointer font-medium">
               <Settings className="mr-2 h-4 w-4" />
               <span>Settings</span>
             </DropdownMenuItem>
@@ -71,7 +71,7 @@ export function UserNav({ user }: UserNavProps) {
                 setTheme("light")
                 signOut({ callbackUrl: "/login" })
             }} 
-            className="text-red-600 focus:text-red-600 cursor-pointer"
+            className="text-red-600 focus:text-red-600 cursor-pointer font-medium"
         >
           <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>

@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowDownIcon, ArrowUpIcon, DollarSign } from "lucide-react"
 import { DashboardCharts, IncomeExpenseBarChart, ExpensePieChart } from "@/components/features/dashboard/DashboardCharts"
@@ -52,6 +53,8 @@ interface DashboardViewProps {
   incomeVsExpense: any[]
   categories: any[]
   accounts: any[]
+  dateRange?: { from?: string; to?: string }
+  selectedDate?: string
 }
 
 export function DashboardView({
@@ -64,9 +67,37 @@ export function DashboardView({
   expenseByCategory,
   incomeVsExpense,
   categories,
-  accounts
+  accounts,
+  dateRange,
+  selectedDate
 }: DashboardViewProps) {
   const [activeTab, setActiveTab] = useState("overview")
+  const router = useRouter()
+
+  const isRangeFiltered = dateRange?.from || dateRange?.to
+  const isSingleFiltered = !!selectedDate
+  const isFiltered = isRangeFiltered || isSingleFiltered
+
+  // Auto-refresh logic for month change
+  useEffect(() => {
+    const currentMonth = new Date().getMonth()
+    
+    // Check every hour if the month has changed
+    const interval = setInterval(() => {
+      const now = new Date()
+      if (now.getMonth() !== currentMonth) {
+        router.refresh()
+      }
+    }, 1000 * 60 * 60) // 1 hour check
+
+    return () => clearInterval(interval)
+  }, [router])
+
+  const dateLabel = isSingleFiltered 
+    ? format(new Date(selectedDate), 'MMMM d, yyyy')
+    : isRangeFiltered
+    ? `${dateRange?.from ? format(new Date(dateRange.from), 'MMM d, yyyy') : '...'} - ${dateRange?.to ? format(new Date(dateRange.to), 'MMM d, yyyy') : 'Present'}`
+    : format(new Date(), 'MMMM yyyy') // Shows e.g. "May 2026"
 
   const getTimeGreeting = () => {
     const hour = new Date().getHours()
@@ -87,7 +118,14 @@ export function DashboardView({
           {getTimeGreeting()}, {user?.name?.split(' ')[0] || 'there'} 👋
         </h1>
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <h2 className="text-3xl font-bold tracking-tight text-foreground">Dashboard</h2>
+          <div>
+            <h2 className="text-3xl font-bold tracking-tight text-foreground">Dashboard</h2>
+            {isFiltered && (
+              <p className="text-sm text-muted-foreground mt-1">
+                Showing results for <span className="font-medium text-primary">{dateLabel}</span>
+              </p>
+            )}
+          </div>
           <div className="flex flex-col sm:flex-row items-center gap-4">
             <CalendarDateRangePicker />
             <LiquidTabs 
@@ -102,8 +140,8 @@ export function DashboardView({
       {activeTab === "overview" && (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
           
-          {/* Budget Progress Bar (Only if budget is set) */}
-          {monthlyBudget > 0 && (
+          {/* Budget Progress Bar (Only if budget is set and not filtered) */}
+          {monthlyBudget > 0 && !isFiltered && (
             <Card className="bg-white/40 backdrop-blur-md border-white/20 shadow-sm overflow-hidden">
                <div className={`h-1 w-full ${isOverBudget ? 'bg-red-100' : 'bg-slate-100'}`}>
                   <div 
@@ -113,7 +151,7 @@ export function DashboardView({
                </div>
                <CardContent className="pt-4 pb-4 flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">Monthly Budget</p>
+                    <p className="text-sm font-medium text-muted-foreground">Monthly Budget Status</p>
                     <p className="text-2xl font-bold">{formatCurrency(monthlyStats.expense)} <span className="text-muted-foreground text-sm font-normal">/ {formatCurrency(monthlyBudget)}</span></p>
                   </div>
                   <div className="text-right">
@@ -143,7 +181,7 @@ export function DashboardView({
             
             <Card className="bg-white/20 backdrop-blur-md border-white/20 shadow-sm">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Income (This Month)</CardTitle>
+                <CardTitle className="text-sm font-medium">Income ({isFiltered ? (isSingleFiltered ? 'Day' : 'Period') : 'Month'})</CardTitle>
                 <ArrowUpIcon className="h-4 w-4 text-emerald-500" />
               </CardHeader>
               <CardContent>
@@ -153,7 +191,7 @@ export function DashboardView({
             
             <Card className="bg-white/20 backdrop-blur-md border-white/20 shadow-sm">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Expenses (This Month)</CardTitle>
+                <CardTitle className="text-sm font-medium">Expenses ({isFiltered ? (isSingleFiltered ? 'Day' : 'Period') : 'Month'})</CardTitle>
                 <ArrowDownIcon className="h-4 w-4 text-red-500" />
               </CardHeader>
               <CardContent>
@@ -163,7 +201,7 @@ export function DashboardView({
 
             <Card className="bg-white/20 backdrop-blur-md border-white/20 shadow-sm">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Net Savings</CardTitle>
+                <CardTitle className="text-sm font-medium">Net Savings ({isFiltered ? (isSingleFiltered ? 'Day' : 'Period') : 'Month'})</CardTitle>
                 <WalletIcon className="h-4 w-4 text-blue-500" />
               </CardHeader>
               <CardContent>
@@ -178,7 +216,7 @@ export function DashboardView({
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
             <Card className="col-span-1 md:col-span-2 lg:col-span-4 bg-white/20 backdrop-blur-md border-white/20 shadow-sm">
               <CardHeader>
-                <CardTitle>Cash Flow History</CardTitle>
+                <CardTitle>Cash Flow {isFiltered ? (isSingleFiltered ? '(Day View)' : '(Filtered View)') : 'History'}</CardTitle>
               </CardHeader>
               <CardContent className="pl-2">
                  <DashboardCharts data={cashflowData} />
@@ -187,7 +225,7 @@ export function DashboardView({
 
             <Card className="col-span-1 md:col-span-2 lg:col-span-3 bg-white/20 backdrop-blur-md border-white/20 shadow-sm">
               <CardHeader>
-                <CardTitle>Recent Transactions</CardTitle>
+                <CardTitle>{isFiltered ? (isSingleFiltered ? 'Transactions for Date' : 'Transactions for Period') : 'Recent Transactions'}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4 h-[300px] overflow-y-auto pr-2 glass-scrollbar">
